@@ -1,0 +1,13 @@
+Port 22
+Protocol 2
+SyslogFacility AUTHPRIV
+#LogLevel INFO
+
+RSAAuthentication yes
+PubkeyAuthentication yes
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+UsePAM yes
+
+# override default of no subsystems
+Subsystem	sftp	/usr/libexec/openssh/sftp-server

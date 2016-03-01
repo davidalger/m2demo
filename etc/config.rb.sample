@@ -1,0 +1,8 @@
+
+# Box hostname and domain Magento 2 will be configured with
+CONF_VM_HOSTNAME = 'm2demo.example.com'
+
+# Digital Ocean Configuration
+CONF_DO_TOKEN = '<your_api_token>'
+CONF_DO_PK_PATH = '~/.ssh/id_rsa'
+CONF_DO_PK_NAME = 'Vagrant'
