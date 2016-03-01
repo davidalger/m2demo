@@ -37,15 +37,13 @@ Vagrant.configure(2) do |conf|
     # configure machine provisioner script
     conf.vm.provision :shell do |conf|
       bootstrap_log = '/var/log/bootstrap.log'
-      env = {
+      exports = generate_exports ({
         bootstrap_log: bootstrap_log,
-        host_zoneinfo: File.readlink('/etc/localtime')
-      }
-      
-      exports = ''
-      env.each do |key, val|
-        exports = %-#{exports}\nexport #{key.upcase}="#{val}";-
-      end
+        host_zoneinfo: File.readlink('/etc/localtime'),
+        github_token: GITHUB_TOKEN,
+        magento_key_user: MAGENTO_KEY_USER,
+        magento_key_pass: MAGENTO_KEY_PASS
+      })
 
       conf.name = 'bootstrap.sh'
       conf.inline = "#{exports}\n/vagrant/lib/bootstrap.sh \
@@ -55,6 +53,26 @@ Vagrant.configure(2) do |conf|
     end
 
     service conf, { start: ['redis', 'mysqld', 'httpd', 'varnish', 'nginx'], reload: ['sshd'] }
+
+    conf.vm.provision :shell do |conf|
+      admin_user = 'admin'
+      admin_pass = SecureRandom.base64 12
+
+      exports = generate_exports ({
+        db_host: 'localhost',
+        db_name: 'magento2',
+        install_dir: '/var/www/magento2',
+        admin_pass: admin_pass
+      })
+      conf.name = "m2setup.sh"
+      conf.inline = "#{exports}\n m2setup.sh -d --hostname=#{CONF_VM_HOSTNAME} --admin-user=#{admin_user}"
+    end
+
+    conf.vm.provision :shell do |conf|
+      exports = generate_exports ({install_dir: '/var/www/magento2' })
+      conf.name = "m2config.sh"
+      conf.inline = "#{exports}\n /vagrant/lib/m2config.sh"
+    end
   end
 end
 
@@ -70,4 +88,12 @@ def service (conf, calls)
     conf.name = "service_sh"
     conf.inline = service_sh
   end
+end
+
+def generate_exports (env = {})
+  exports = ''
+  env.each do |key, val|
+    exports = %-#{exports}\nexport #{key.upcase}="#{val}";-
+  end
+  return exports
 end

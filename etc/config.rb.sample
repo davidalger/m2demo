@@ -3,6 +3,13 @@
 CONF_VM_HOSTNAME = 'm2demo.example.com'
 
 # Digital Ocean Configuration
-CONF_DO_TOKEN = '<your_api_token>'
+CONF_DO_TOKEN = '<digitalocean_token>'
 CONF_DO_PK_PATH = '~/.ssh/id_rsa'
 CONF_DO_PK_NAME = 'Vagrant'
+
+# GitHub API Access
+GITHUB_TOKEN = '<github_token>'
+
+# Magento Repository Access - Instructions for getting keys is here: http://bit.ly/1T6qIo9
+MAGENTO_KEY_USER = '<public_key>'
+MAGENTO_KEY_PASS = '<private_key>'

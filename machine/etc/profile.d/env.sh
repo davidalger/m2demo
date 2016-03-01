@@ -12,9 +12,6 @@
 export MAGE_IS_DEVELOPER_MODE=0
 export MAGE_MODE=production
 
-# set central composer home
-export COMPOSER_HOME=/vagrant/etc/composer
-
 # configure PATH to use local and user scripts
 export PATH=~/bin:/usr/local/bin:$PATH:/usr/local/sbin
 
