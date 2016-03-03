@@ -16,9 +16,6 @@ export PATH="/usr/local/bin:$PATH"
 ########################################
 # generic machine configuration
 
-# import all our custom conf files
-rsync -av ./machine/etc/ /etc/
-
 # set dns record in hosts file
 ip_address=$(ifconfig eth0 | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}')
 printf "\n$ip_address $(hostname)\n" >> /etc/hosts
@@ -33,16 +30,22 @@ if [[ -f "$HOST_ZONEINFO" ]]; then
     ln -s "$HOST_ZONEINFO" /etc/localtime
 fi
 
-########################################
-# import / configure rpms
-yum install -y wget
-
+# import gpg keys before installing anything
 rpm --import ./etc/keys/RPM-GPG-KEY-CentOS-6.txt
 rpm --import ./etc/keys/RPM-GPG-KEY-EPEL-6.txt
 rpm --import ./etc/keys/RPM-GPG-KEY-MySql.txt
 rpm --import ./etc/keys/RPM-GPG-KEY-remi.txt
 rpm --import ./etc/keys/RPM-GPG-KEY-nginx.txt
 rpm --import ./etc/keys/RPM-GPG-KEY-Varnish.txt
+
+# install tools we need to get started
+yum install -y rsync wget
+
+# import all our custom conf files
+rsync -av ./machine/etc/ /etc/
+
+########################################
+# import / configure rpms
 
 if [[ ! -d /var/cache/yum/rpms ]]; then
     mkdir -p /var/cache/yum/rpms

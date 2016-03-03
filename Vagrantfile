@@ -12,27 +12,34 @@ require_relative 'etc/config.rb'
 Vagrant.require_version '>= 1.7.4'
 Vagrant.configure(2) do |conf|
   conf.vm.define :m2demo do |conf|
-    conf.vm.box = 'bento/centos-6.7'
     conf.vm.hostname = CONF_VM_HOSTNAME
+
+    conf.vm.provider :virtualbox do |provider|
+      conf.vm.box = 'bento/centos-6.7'
+
+      provider.memory = 4096
+      provider.cpus = 2
+    end
 
     conf.vm.provider :digital_ocean do |provider, override|
       provider.token = CONF_DO_TOKEN
       provider.image = 'centos-6-5-x64' # this is really CentOS 6.7 x64
       provider.region = 'nyc2'
       provider.size = '4gb'
-      
+      provider.backups_enabled = true
+
       if defined? CONF_DO_PK_NAME
         provider.ssh_key_name = CONF_DO_PK_NAME
       end
       if defined? CONF_DO_PK_PATH
         override.ssh.private_key_path = CONF_DO_PK_PATH
       end
-      
-      provider.backups_enabled = true
 
       override.vm.box = 'digital_ocean'
       override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
     end
+
+    conf.ssh.forward_agent = false
 
     # configure machine provisioner script
     conf.vm.provision :shell do |conf|
@@ -65,7 +72,7 @@ Vagrant.configure(2) do |conf|
         admin_pass: admin_pass
       })
       conf.name = "m2setup.sh"
-      conf.inline = "#{exports}\n m2setup.sh -d --hostname=#{CONF_VM_HOSTNAME} --admin-user=#{admin_user}"
+      conf.inline = "#{exports}\n m2setup.sh -d --hostname=#{CONF_VM_HOSTNAME}"
     end
 
     conf.vm.provision :shell do |conf|
