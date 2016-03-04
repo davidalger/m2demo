@@ -19,6 +19,7 @@ Vagrant.configure(2) do |conf|
 
     conf.vm.provider :virtualbox do |provider|
       conf.vm.box = 'bento/centos-6.7'
+      conf.vm.network :private_network, type: 'dhcp'
 
       provider.memory = 4096
       provider.cpus = 2
