@@ -10,7 +10,9 @@ CONF_DO_PK_NAME = 'Vagrant'
 # GitHub API Access
 GITHUB_TOKEN = '<github_token>'
 
-# Magento Access Info - Instructions for getting keys is here: http://bit.ly/1T6qIo9
+# Magento Access Info - Instructions for getting keys is here:
+# http://devdocs.magento.com/guides/v2.0/install-gde/prereq/connect-auth.html#auth-get
+
 MAGENTO_KEY_USER = '<public_key>'
 MAGENTO_KEY_PASS = '<private_key>'
 MAGENTO_IS_ENTERPRISE = false
