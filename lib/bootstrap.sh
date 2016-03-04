@@ -131,7 +131,7 @@ chmod +x /usr/local/bin/n98-magerun
 ln -s /usr/local/bin/n98-magerun /usr/local/bin/mr
 
 # install m2setup.sh
-wget https://raw.githubusercontent.com/davidalger/devenv/develop/vagrant/bin/m2setup.sh -O /usr/local/bin/m2setup.sh 2>&1
+wget https://raw.githubusercontent.com/davidalger/devenv/master/vagrant/bin/m2setup.sh -O /usr/local/bin/m2setup.sh 2>&1
 chmod +x /usr/local/bin/m2setup.sh
 
 echo "==> END bootstrap.sh at $(datetime) UTC"
