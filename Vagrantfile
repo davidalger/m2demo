@@ -7,6 +7,7 @@
  # http://davidalger.com/contact/
  ##
 
+CACHE_ROOT = File.dirname(__FILE__) + '/.cache'
 require_relative 'etc/config.rb'
 
 Vagrant.require_version '>= 1.7.4'
@@ -19,6 +20,15 @@ Vagrant.configure(2) do |conf|
 
       provider.memory = 4096
       provider.cpus = 2
+      
+      FileUtils.mkdir_p CACHE_ROOT + '/composer'
+      conf.vm.synced_folder CACHE_ROOT + '/composer', '/root/.composer/cache'
+
+      FileUtils.mkdir_p CACHE_ROOT + '/yum'
+      conf.vm.synced_folder CACHE_ROOT + '/yum', '/var/cache/yum'
+
+      FileUtils.mkdir_p CACHE_ROOT + '/npm'
+      conf.vm.synced_folder CACHE_ROOT + '/npm', '/var/cache/npm'
     end
 
     conf.vm.provider :digital_ocean do |provider, override|
