@@ -25,6 +25,11 @@ mr -q config:set system/full_page_cache/varnish/backend_host localhost
 mr -q config:set system/full_page_cache/varnish/backend_port 8080
 mr -q cache:flush
 
+echo 'Disabling secure URLs (currently no ssl support in vm)'
+mr -q config:set web/secure/use_in_frontend 0
+mr -q config:set web/secure/use_in_adminhtml 0
+mr -q cache:flush
+
 echo 'Setting file permissions and ownership'
 
 find $INSTALL_DIR -type d -exec chmod 770 {} +

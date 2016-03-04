@@ -24,4 +24,4 @@ This builds a virtual machine running Cent OS 6.7, MySql 5.6, PHP 7.0, Nginx 1.8
 
 ## Known Issues
 
-* There is currently no support for SSL, but it's configured in the Magento 2 installation limiting access to the admin.
+* There is currently no support for SSL in the virtual machine
