@@ -101,18 +101,20 @@ Vagrant.configure(2) do |conf|
       conf.name = "m2config.sh"
       conf.inline = "#{exports}\n /vagrant/lib/m2config.sh"
     end
-
+    
     conf.vm.provision :shell, run: 'always' do |conf|
       conf.name = "vm-info"
-      conf.inline = '
-        ip_address=$(ifconfig eth0 | grep "inet addr" | awk -F: \'{print $2}\' | awk \'{print $1}\')
-        printf "ip address: %s\nhostname: %s\n" "$ip_address" "$(hostname)"
-      '
+      conf.inline = "
+        # use info from eth1 if available, otherwise eth0
+        interface=$(ifconfig eth1 > /dev/null 2>&1 && echo eth1 || echo eth0)
+        ip_address=$(ifconfig $interface | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}')
+        printf 'ip address: %s\nhostname: %s\n' $ip_address $(hostname)
+      "
     end
   end
 end
 
-def service (conf, calls)
+def service conf, calls
   service_sh = ""
   calls.each do | key, val |
     val.each do | val |
@@ -126,7 +128,7 @@ def service (conf, calls)
   end
 end
 
-def generate_exports (env = {})
+def generate_exports env = {}
   exports = ''
   env.each do |key, val|
     exports = %-#{exports}\nexport #{key.upcase}="#{val}";-
