@@ -8,6 +8,8 @@
  ##
 
 CACHE_ROOT = File.dirname(__FILE__) + '/.cache'
+FILTERS_DIR = '/vagrant/etc/filters'
+
 require_relative 'etc/config.rb'
 
 Vagrant.require_version '>= 1.7.4'
@@ -22,7 +24,7 @@ Vagrant.configure(2) do |conf|
       provider.cpus = 2
       
       FileUtils.mkdir_p CACHE_ROOT + '/composer'
-      conf.vm.synced_folder CACHE_ROOT + '/composer', '/root/.composer/cache'
+      conf.vm.synced_folder CACHE_ROOT + '/composer', '/var/cache/composer'
 
       FileUtils.mkdir_p CACHE_ROOT + '/yum'
       conf.vm.synced_folder CACHE_ROOT + '/yum', '/var/cache/yum'
@@ -64,8 +66,8 @@ Vagrant.configure(2) do |conf|
 
       conf.name = 'bootstrap.sh'
       conf.inline = "#{exports}\n/vagrant/lib/bootstrap.sh \
-         > >(tee -a #{bootstrap_log} > /dev/null) / \
-        2> >(tee -a #{bootstrap_log} | grep -vE -f /vagrant/etc/filters/bootstrap >&2)
+         > >(tee -a #{bootstrap_log} > /dev/null) \
+        2> >(stdbuf -oL -eL tee -a #{bootstrap_log} | grep -vE -f #{FILTERS_DIR}/bootstrap >&2)
       "
     end
 
@@ -82,7 +84,10 @@ Vagrant.configure(2) do |conf|
         admin_pass: admin_pass
       })
       conf.name = "m2setup.sh"
-      conf.inline = "#{exports}\n m2setup.sh -d --hostname=#{CONF_VM_HOSTNAME}"
+      conf.inline = "#{exports}\n ub='stdbuf -oL -eL '\n m2setup.sh -v -d --hostname=#{CONF_VM_HOSTNAME} \
+         > >($ub tee >($ub grep -E '^(==>|\\+ )') > >($ub sed 's/^/stdout: /' >> /var/log/m2setup.log)) \
+        2> >($ub tee >($ub grep -vE -f #{FILTERS_DIR}/m2setup >&2) > >($ub sed 's/^/stderr: /' >> /var/log/m2setup.log))
+      "
     end
 
     conf.vm.provision :shell do |conf|

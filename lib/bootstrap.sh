@@ -11,8 +11,6 @@
 set -e
 cd /vagrant
 
-export PATH="/usr/local/bin:$PATH"
-
 function datetime {
     date -u '+%F %H:%m:%S'
 }
@@ -49,6 +47,9 @@ yum install -y rsync wget
 
 # import all our custom conf files
 rsync -av ./machine/etc/ /etc/
+
+# load our env setup into current shell
+source /etc/profile.d/env.sh
 
 ########################################
 # import / configure rpms

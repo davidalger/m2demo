@@ -1,0 +1,15 @@
+^$
+^(  - |)Installing .*\)$
+^    Downloading:
+^    Loading from cache$
+^Created project in /
+^Loading composer repositories with package information$
+^.*/.* suggests installing .*\)$
+^Writing lock file$
+^Generating autoload files$
+^./composer.json has been updated$
+^Loading composer repositories with package information$
+^Updating dependencies .*\)$
+^Nothing to install or update$
+^<warning>
+</warning>$
