@@ -13,6 +13,12 @@ cd /vagrant
 
 export PATH="/usr/local/bin:$PATH"
 
+function datetime {
+    date -u '+%F %H:%m:%S'
+}
+
+echo "==> BEGIN bootstrap.sh at $(datetime) UTC"
+
 ########################################
 # generic machine configuration
 
@@ -68,7 +74,7 @@ yum install -y nginx-release-centos-6-0.el6.ngx.noarch.rpm
 yum install -y varnish-4.1.el6.rpm
 yum install -y mysql-community-release-el6-5.noarch.rpm
 
-yum update -y -q
+yum update -y
 
 popd
 
@@ -92,12 +98,12 @@ yum install -y bash-completion bc man git redis sendmail varnish nginx httpd mys
 npm install -g grunt-cli
 
 # configure mysqld
-service mysqld start >> $BOOTSTRAP_LOG 2>&1 # init data directory and access
+service mysqld start 2>&1 # init data directory and access
 mysql -uroot -e "
     GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
 "
-service mysqld stop >> $BOOTSTRAP_LOG 2>&1 # leave mysqld in stopped state
+service mysqld stop 2>&1 # leave mysqld in stopped state
 
 # configure httpd
 perl -pi -e 's/Listen 80//' /etc/httpd/conf/httpd.conf
@@ -126,3 +132,5 @@ ln -s /usr/local/bin/n98-magerun /usr/local/bin/mr
 # install m2setup.sh
 wget https://raw.githubusercontent.com/davidalger/devenv/develop/vagrant/bin/m2setup.sh -O /usr/local/bin/m2setup.sh 2>&1
 chmod +x /usr/local/bin/m2setup.sh
+
+echo "==> END bootstrap.sh at $(datetime) UTC"
