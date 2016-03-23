@@ -17,7 +17,7 @@ Vagrant.configure(2) do |conf|
   conf.vm.define :m2demo do |conf|
     conf.vm.hostname = CONF_VM_HOSTNAME
 
-    conf.vm.provider :virtualbox do |provider|
+    conf.vm.provider :virtualbox do |provider, conf|
       conf.vm.box = 'bento/centos-6.7'
       conf.vm.network :private_network, type: 'dhcp'
 
@@ -34,7 +34,7 @@ Vagrant.configure(2) do |conf|
       conf.vm.synced_folder CACHE_ROOT + '/npm', '/var/cache/npm'
     end
 
-    conf.vm.provider :digital_ocean do |provider, override|
+    conf.vm.provider :digital_ocean do |provider, conf|
       provider.token = CONF_DO_TOKEN
       provider.image = 'centos-6-5-x64' # this is really CentOS 6.7 x64
       provider.region = 'nyc2'
@@ -45,14 +45,15 @@ Vagrant.configure(2) do |conf|
         provider.ssh_key_name = CONF_DO_PK_NAME
       end
       if defined? CONF_DO_PK_PATH
-        override.ssh.private_key_path = CONF_DO_PK_PATH
+        conf.ssh.private_key_path = CONF_DO_PK_PATH
       end
 
-      override.vm.box = 'digital_ocean'
-      override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
+      conf.vm.box = 'digital_ocean'
+      conf.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
     end
 
     conf.ssh.forward_agent = false
+    conf.vm.synced_folder '.', '/vagrant', type: 'rsync', rsync__exclude: '.cache/'
 
     # configure machine provisioner script
     conf.vm.provision :shell do |conf|
