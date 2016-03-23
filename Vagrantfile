@@ -91,7 +91,7 @@ Vagrant.configure(2) do |conf|
       end
 
       conf.name = "m2setup.sh"
-      conf.inline = "#{exports}\n ub='stdbuf -oL -eL '\n m2setup.sh #{e_flag} -v -d --hostname=#{CONF_VM_HOSTNAME} \
+      conf.inline = "#{exports}\n ub='stdbuf -oL'\n m2setup.sh #{e_flag} -v -d --hostname=#{CONF_VM_HOSTNAME} \
          > >($ub tee >($ub grep -E '^(==>|\\+ )') > >($ub sed 's/^/stdout: /' >> /var/log/m2setup.log)) \
         2> >($ub tee >($ub grep -vE -f #{FILTERS_DIR}/m2setup >&2) > >($ub sed 's/^/stderr: /' >> /var/log/m2setup.log))
       "
