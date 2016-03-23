@@ -107,9 +107,9 @@ Vagrant.configure(2) do |conf|
       conf.name = "vm-info"
       conf.inline = "
         # use info from eth1 if available, otherwise eth0
-        interface=$(ifconfig eth1 > /dev/null 2>&1 && echo eth1 || echo eth0)
+        interface=$(ifconfig eth1 | grep 'inet addr' > /dev/null 2>&1 && echo eth1 || echo eth0)
         ip_address=$(ifconfig $interface | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}')
-        printf 'ip address: %s\nhostname: %s\n' $ip_address $(hostname)
+        printf 'ip address: %s\nhostname: %s\n' \"$ip_address\" \"$(hostname)\"
       "
     end
   end
