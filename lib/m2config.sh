@@ -44,3 +44,6 @@ echo 'Linking public directory into webroot'
 rmdir /var/www/html
 ln -s $INSTALL_DIR/pub /var/www/html
 ln -s $INSTALL_DIR/pub $INSTALL_DIR/pub/pub     # todo: remove temp fix when GH Issue #2711 is resolved
+
+echo 'Configuring cron scheduler'
+crontab -u apache <(echo '* * * * * /var/www/magento2/bin/magento cron:run >> /var/www/magento2/var/log/cron.log')
