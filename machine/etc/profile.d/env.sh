@@ -16,5 +16,5 @@ export COMPOSER_HOME=/var/composer
 export COMPOSER_CACHE_DIR=/var/cache/composer
 export COMPOSER_NO_INTERACTION=1
 
-export PATH=~/bin:/usr/local/bin:$PATH:/usr/local/sbin
+export PATH=~/bin:/usr/local/bin:$PATH
 export CLICOLOR=1

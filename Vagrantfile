@@ -66,9 +66,9 @@ Vagrant.configure(2) do |conf|
       })
 
       conf.name = 'bootstrap.sh'
-      conf.inline = "#{exports}\n/vagrant/lib/bootstrap.sh \
-         > >(tee -a #{bootstrap_log} > /dev/null) \
-        2> >(stdbuf -oL -eL tee -a #{bootstrap_log} | grep -vE -f #{FILTERS_DIR}/bootstrap >&2)
+      conf.inline = "#{exports}\n /vagrant/lib/bootstrap.sh \
+         > >(tee -a #{bootstrap_log} >(stdbuf -oL grep -E '^:: ') > /dev/null) \
+        2> >(tee -a #{bootstrap_log} | stdbuf -oL grep -vE -f #{FILTERS_DIR}/bootstrap >&2)
       "
     end
 
