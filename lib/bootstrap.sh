@@ -107,7 +107,7 @@ yum install -y bash-completion bc man git rsync mysql
 :: installing configuration into /etc
 ########################################
 
-rsync -av ./machine/etc/ /etc/
+rsync -av ./guest/etc/ /etc/
 git config --global core.excludesfile /etc/.gitignore_global
 
 ########################################
@@ -139,7 +139,7 @@ yum --enablerepo=remi --enablerepo=remi-php70 install -y php php-cli php-opcache
 :: installing mysqld service
 ########################################
 
-[ -f ./machine/etc/my.cnf ] && cp ./machine/etc/my.cnf /etc/my.cnf
+[ -f ./guest/etc/my.cnf ] && cp ./guest/etc/my.cnf /etc/my.cnf
 yum install -y mysql-server
 
 service mysqld start 2>&1 # init data directory and access
