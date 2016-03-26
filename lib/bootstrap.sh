@@ -166,7 +166,3 @@ composer config -g http-basic.repo.magento.com "$MAGENTO_KEY_USER" "$MAGENTO_KEY
 wget http://files.magerun.net/n98-magerun2-latest.phar -O /usr/local/bin/n98-magerun 2>&1
 chmod +x /usr/local/bin/n98-magerun
 ln -s /usr/local/bin/n98-magerun /usr/local/bin/mr
-
-# install m2setup.sh
-wget https://raw.githubusercontent.com/davidalger/devenv/master/vagrant/bin/m2setup.sh -O /usr/local/bin/m2setup.sh 2>&1
-chmod +x /usr/local/bin/m2setup.sh

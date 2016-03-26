@@ -17,6 +17,7 @@ Vagrant.configure(2) do |conf|
   conf.vm.define :m2demo do |conf|
     conf.vm.hostname = CONF_VM_HOSTNAME
 
+    # virtualbox specific configuration
     conf.vm.provider :virtualbox do |provider, conf|
       conf.vm.box = 'bento/centos-6.7'
       conf.vm.network :private_network, type: 'dhcp'
@@ -34,6 +35,7 @@ Vagrant.configure(2) do |conf|
       conf.vm.synced_folder CACHE_ROOT + '/npm', '/var/cache/npm'
     end
 
+    # digital ocean specific configuration
     conf.vm.provider :digital_ocean do |provider, conf|
       provider.token = CONF_DO_TOKEN
       provider.image = 'centos-6-5-x64' # this is really CentOS 6.7 x64
@@ -52,10 +54,11 @@ Vagrant.configure(2) do |conf|
       conf.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
     end
 
+    # generic node configuration
     conf.ssh.forward_agent = false
     conf.vm.synced_folder '.', '/vagrant', type: 'rsync', rsync__exclude: '.cache/'
 
-    # configure machine provisioner script
+    # primary node provisioner
     conf.vm.provision :shell do |conf|
       bootstrap_log = '/var/log/bootstrap.log'
       exports = generate_exports ({
@@ -73,37 +76,20 @@ Vagrant.configure(2) do |conf|
       "
     end
 
+    # service state provisioner
     service conf, { start: ['redis', 'mysqld', 'httpd', 'varnish', 'nginx'], reload: ['sshd'] }
 
+    # magento2 install provisioner
     conf.vm.provision :shell do |conf|
-      admin_user = 'admin'
-      admin_pass = SecureRandom.base64 12
-
       exports = generate_exports ({
-        db_host: 'localhost',
-        db_name: 'magento2',
-        install_dir: '/var/www/magento2',
-        admin_pass: admin_pass
+        demo_hostname: CONF_VM_HOSTNAME,
+        is_enterprise: MAGENTO_IS_ENTERPRISE ? '1' : ''
       })
-
-      e_flag = ''
-      if MAGENTO_IS_ENTERPRISE
-        e_flag = '-e'
-      end
-
-      conf.name = "m2setup.sh"
-      conf.inline = "#{exports}\n ub='stdbuf -oL'\n m2setup.sh #{e_flag} -v -d --hostname=#{CONF_VM_HOSTNAME} \
-         > >($ub tee >($ub grep -E '^(==>|\\+ )') > >($ub sed 's/^/stdout: /' >> /var/log/m2setup.log)) \
-        2> >($ub tee >($ub grep -vE -f #{FILTERS_DIR}/m2setup >&2) > >($ub sed 's/^/stderr: /' >> /var/log/m2setup.log))
-      "
-    end
-
-    conf.vm.provision :shell do |conf|
-      exports = generate_exports ({install_dir: '/var/www/magento2' })
-      conf.name = "m2config.sh"
-      conf.inline = "#{exports}\n /vagrant/lib/m2config.sh"
+      conf.name = "m2install.sh"
+      conf.inline = "#{exports}\n /vagrant/lib/m2install.sh"
     end
     
+    # always output guest machine information on load
     conf.vm.provision :shell, run: 'always' do |conf|
       conf.name = "vm-info"
       conf.inline = "

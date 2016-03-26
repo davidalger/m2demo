@@ -1,9 +1,8 @@
 ^$
-^ +$
 ^(  - |)Installing .*\)$
 ^    Downloading
 ^    Loading from cache$
-^Created project in /
+^Created project in \.?/
 ^Loading composer repositories with package information$
 ^.*/.* suggests installing .*\)$
 ^Package .* is abandoned, you should avoid using it\. Use .* instead\.$
@@ -12,10 +11,4 @@
 ^./composer.json has been updated$
 ^Loading composer repositories with package information$
 ^Updating dependencies .*\)$
-^Nothing to install or update$
-\[Composer\\Downloader\\TransportException\]
-The .* URL required authentication
-You must be using the interactive console to authenticate
 ^require \[--dev\]
-^<warning>
-</warning>$
