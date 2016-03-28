@@ -61,18 +61,17 @@ Vagrant.configure(2) do |conf|
     # primary node provisioner
     conf.vm.provision :shell do |conf|
       bootstrap_log = '/var/log/bootstrap.log'
-      exports = generate_exports ({
-        bootstrap_log: bootstrap_log,
-        host_zoneinfo: File.readlink('/etc/localtime'),
-        github_token: GITHUB_TOKEN,
-        magento_key_user: MAGENTO_KEY_USER,
-        magento_key_pass: MAGENTO_KEY_PASS
-      })
-
       conf.name = 'bootstrap.sh'
-      conf.inline = "#{exports}\n /vagrant/lib/bootstrap.sh \
-         > >(tee -a #{bootstrap_log} >(stdbuf -oL grep -E '^:: ') > /dev/null) \
-        2> >(tee -a #{bootstrap_log} | stdbuf -oL grep -vE -f #{FILTERS_DIR}/bootstrap >&2)
+      conf.inline = "
+        export BOOTSTRAP_LOG=#{bootstrap_log}
+        export HOST_ZONEINFO=#{File.readlink('/etc/localtime')}
+        export GITHUB_TOKEN=#{GITHUB_TOKEN}
+        export MAGENTO_KEY_USER=#{MAGENTO_KEY_USER}
+        export MAGENTO_KEY_PASS=#{MAGENTO_KEY_PASS}
+        
+        /vagrant/lib/bootstrap.sh \
+            > >(tee -a #{bootstrap_log} >(stdbuf -oL grep -E '^:: ') > /dev/null) \
+           2> >(tee -a #{bootstrap_log} | stdbuf -oL grep -vE -f #{FILTERS_DIR}/bootstrap >&2)
       "
     end
 
@@ -81,12 +80,12 @@ Vagrant.configure(2) do |conf|
 
     # magento2 install provisioner
     conf.vm.provision :shell do |conf|
-      exports = generate_exports ({
-        demo_hostname: CONF_VM_HOSTNAME,
-        is_enterprise: MAGENTO_IS_ENTERPRISE ? '1' : ''
-      })
       conf.name = "m2install.sh"
-      conf.inline = "#{exports}\n /vagrant/lib/m2install.sh"
+      conf.inline = "
+        export DEMO_HOSTNAME=#{CONF_VM_HOSTNAME}
+        export IS_ENTERPRISE=#{MAGENTO_IS_ENTERPRISE ? '1' : ''}
+        /vagrant/lib/m2install.sh
+      "
     end
     
     # always output guest machine information on load
@@ -114,12 +113,4 @@ def service conf, calls
     conf.name = "service_sh"
     conf.inline = service_sh
   end
-end
-
-def generate_exports env = {}
-  exports = ''
-  env.each do |key, val|
-    exports = %-#{exports}\nexport #{key.upcase}="#{val}";-
-  end
-  return exports
 end
