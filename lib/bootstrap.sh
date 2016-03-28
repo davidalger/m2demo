@@ -13,22 +13,12 @@ cd /vagrant
 function :: { echo ":: $@"; }
 
 ########################################
-:: running generic machine configuration
+:: running generic guest configuration
 ########################################
 
 # set dns record in hosts file
 ip_address=$(ifconfig eth0 | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}')
 printf "\n$ip_address $(hostname)\n" >> /etc/hosts
-
-# set zone info to match host if possible
-if [[ -f "$HOST_ZONEINFO" ]]; then
-    if [[ -f /etc/localtime ]]; then
-        mv /etc/localtime /etc/localtime.bak
-    elif [[ -L /etc/localtime ]]; then
-        rm /etc/localtime
-    fi
-    ln -s "$HOST_ZONEINFO" /etc/localtime
-fi
 
 ########################################
 :: configuring rpms needed for install
@@ -98,7 +88,20 @@ if [[ -L /usr/lib/node_modules/inherits ]]; then
 fi
 
 ########################################
-:: installing generic vm tooling
+:: setting zone info to match host zone
+########################################
+
+if [[ -f "$HOST_ZONEINFO" ]]; then
+    if [[ -f /etc/localtime ]]; then
+        mv /etc/localtime /etc/localtime.bak
+    elif [[ -L /etc/localtime ]]; then
+        rm /etc/localtime
+    fi
+    ln -s "$HOST_ZONEINFO" /etc/localtime
+fi
+
+########################################
+:: installing generic guest tooling
 ########################################
 
 yum install -y bash-completion bc man git rsync mysql
