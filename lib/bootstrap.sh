@@ -13,22 +13,12 @@ cd /vagrant
 function :: { echo ":: $@"; }
 
 ########################################
-:: running generic machine configuration
+:: running generic guest configuration
 ########################################
 
 # set dns record in hosts file
 ip_address=$(ifconfig eth0 | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}')
 printf "\n$ip_address $(hostname)\n" >> /etc/hosts
-
-# set zone info to match host if possible
-if [[ -f "$HOST_ZONEINFO" ]]; then
-    if [[ -f /etc/localtime ]]; then
-        mv /etc/localtime /etc/localtime.bak
-    elif [[ -L /etc/localtime ]]; then
-        rm /etc/localtime
-    fi
-    ln -s "$HOST_ZONEINFO" /etc/localtime
-fi
 
 ########################################
 :: configuring rpms needed for install
@@ -98,7 +88,20 @@ if [[ -L /usr/lib/node_modules/inherits ]]; then
 fi
 
 ########################################
-:: installing generic vm tooling
+:: setting zone info to match host zone
+########################################
+
+if [[ -f "$HOST_ZONEINFO" ]]; then
+    if [[ -f /etc/localtime ]]; then
+        mv /etc/localtime /etc/localtime.bak
+    elif [[ -L /etc/localtime ]]; then
+        rm /etc/localtime
+    fi
+    ln -s "$HOST_ZONEINFO" /etc/localtime
+fi
+
+########################################
+:: installing generic guest tooling
 ########################################
 
 yum install -y bash-completion bc man git rsync mysql
@@ -110,30 +113,43 @@ yum install -y bash-completion bc man git rsync mysql
 rsync -av ./guest/etc/ /etc/
 git config --global core.excludesfile /etc/.gitignore_global
 
-########################################
-:: installing vm tooling and services
-########################################
-
-yum install -y redis sendmail varnish httpd nginx
-npm install -g grunt-cli
+service sshd reload     # pickup the new config above rsync drops in place
 
 ########################################
-:: configuring httpd
+:: installing web services
 ########################################
 
-perl -pi -e 's/Listen 80//' /etc/httpd/conf/httpd.conf
-perl -0777 -pi -e 's#(<Directory "/var/www/html">.*?)AllowOverride None(.*?</Directory>)#$1AllowOverride All$2#s' \
-        /etc/httpd/conf/httpd.conf
+yum install -y redis sendmail varnish nginx
 
-# disable error index file if installed
-[ -f "/var/www/error/noindex.html" ] && mv /var/www/error/noindex.html /var/www/error/noindex.html.disabled
-
-########################################
-:: installing php and dependencies
-########################################
-
-yum --enablerepo=remi --enablerepo=remi-php70 install -y php php-cli php-opcache \
+yum --enablerepo=remi --enablerepo=remi-php70 install -y php-fpm php-cli php-opcache \
     php-mysqlnd php-mhash php-curl php-gd php-intl php-mcrypt php-xsl php-mbstring php-soap php-bcmath php-zip
+
+########################################
+:: configuring web services
+########################################
+
+adduser --system --user-group --no-create-home www-data
+usermod -a -G www-data nginx
+
+chown -R root /var/log/php-fpm      # ditch apache ownership
+chgrp -R www-data /var/lib/php      # ditch apache group
+
+userdel apache
+
+perl -pi -e 's/^user = apache/user = www-data/' /etc/php-fpm.d/www.conf
+perl -pi -e 's/^group = apache/group = www-data/' /etc/php-fpm.d/www.conf
+
+chkconfig redis on
+service redis start
+
+chkconfig varnish on
+service varnish start
+
+chkconfig nginx on
+service nginx start
+
+chkconfig php-fpm on
+service php-fpm start
 
 ########################################
 :: installing mysqld service
@@ -142,19 +158,22 @@ yum --enablerepo=remi --enablerepo=remi-php70 install -y php php-cli php-opcache
 [ -f ./guest/etc/my.cnf ] && cp ./guest/etc/my.cnf /etc/my.cnf
 yum install -y mysql-server
 
-service mysqld start 2>&1 # init data directory and access
+chkconfig mysqld on
+service mysqld start 2>&1 # data directory init process is is chatty on stderr
+
 mysql -uroot -e "
     GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
 "
-service mysqld stop 2>&1 # leave mysqld in stopped state
 
 ########################################
-:: installing 3rd party tools
+:: installing develop tools
 ########################################
 
 # import local env configuration (needed for composer config)
 source /etc/profile.d/env.sh
+
+npm install -g grunt-cli
 
 # install composer
 wget https://getcomposer.org/download/1.0.0-alpha11/composer.phar -O /usr/local/bin/composer 2>&1

@@ -119,20 +119,18 @@ find $install_dir -type d -exec chmod 770 {} +
 find $install_dir -type f -exec chmod 660 {} +
 
 chmod -R g+s $install_dir
-chown -R apache:nginx $install_dir
+chown -R www-data:www-data $install_dir
 
 chmod +x $install_dir/bin/magento
 
 ########################################
 :: configuring crontab worker
 
-crontab -u apache <(echo '* * * * * /var/www/magento2/bin/magento cron:run >> /var/www/magento2/var/log/cron.log')
+crontab -u www-data <(echo '* * * * * /var/www/magento2/bin/magento cron:run >> /var/www/magento2/var/log/cron.log')
 
 ########################################
-:: linking public directory into webroot
+:: implimenting workaround for GH \#2711
 
-rmdir /var/www/html
-ln -s $install_dir/pub /var/www/html
 ln -s $install_dir/pub $install_dir/pub/pub     # TODO: remove temp fix when GH Issue #2711 is resolved
 
 ########################################
