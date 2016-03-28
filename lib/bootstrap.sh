@@ -131,6 +131,11 @@ yum --enablerepo=remi --enablerepo=remi-php70 install -y php-fpm php-cli php-opc
 adduser --system --user-group --no-create-home www-data
 usermod -a -G www-data nginx
 
+chown -R root /var/log/php-fpm      # ditch apache ownership
+chgrp -R www-data /var/lib/php      # ditch apache group
+
+userdel apache
+
 perl -pi -e 's/^user = apache/user = www-data/' /etc/php-fpm.d/www.conf
 perl -pi -e 's/^group = apache/group = www-data/' /etc/php-fpm.d/www.conf
 
