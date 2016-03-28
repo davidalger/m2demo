@@ -113,15 +113,19 @@ yum install -y bash-completion bc man git rsync mysql
 rsync -av ./guest/etc/ /etc/
 git config --global core.excludesfile /etc/.gitignore_global
 
+service sshd reload     # pickup the new config above rsync drops in place
+
 ########################################
-:: installing vm tooling and services
+:: installing web services
 ########################################
 
 yum install -y redis sendmail varnish httpd nginx
-npm install -g grunt-cli
+
+yum --enablerepo=remi --enablerepo=remi-php70 install -y php php-cli php-opcache \
+    php-mysqlnd php-mhash php-curl php-gd php-intl php-mcrypt php-xsl php-mbstring php-soap php-bcmath php-zip
 
 ########################################
-:: configuring httpd
+:: configuring web services
 ########################################
 
 perl -pi -e 's/Listen 80//' /etc/httpd/conf/httpd.conf
@@ -131,12 +135,17 @@ perl -0777 -pi -e 's#(<Directory "/var/www/html">.*?)AllowOverride None(.*?</Dir
 # disable error index file if installed
 [ -f "/var/www/error/noindex.html" ] && mv /var/www/error/noindex.html /var/www/error/noindex.html.disabled
 
-########################################
-:: installing php and dependencies
-########################################
+chkconfig redis on
+service redis start
 
-yum --enablerepo=remi --enablerepo=remi-php70 install -y php php-cli php-opcache \
-    php-mysqlnd php-mhash php-curl php-gd php-intl php-mcrypt php-xsl php-mbstring php-soap php-bcmath php-zip
+chkconfig varnish on
+service varnish start
+
+chkconfig nginx on
+service nginx start
+
+chkconfig php-fpm on
+service php-fpm start
 
 ########################################
 :: installing mysqld service
@@ -145,19 +154,22 @@ yum --enablerepo=remi --enablerepo=remi-php70 install -y php php-cli php-opcache
 [ -f ./guest/etc/my.cnf ] && cp ./guest/etc/my.cnf /etc/my.cnf
 yum install -y mysql-server
 
-service mysqld start 2>&1 # init data directory and access
+chkconfig mysqld on
+service mysqld start 2>&1 # data directory init process is is chatty on stderr
+
 mysql -uroot -e "
     GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
 "
-service mysqld stop 2>&1 # leave mysqld in stopped state
 
 ########################################
-:: installing 3rd party tools
+:: installing develop tools
 ########################################
 
 # import local env configuration (needed for composer config)
 source /etc/profile.d/env.sh
+
+npm install -g grunt-cli
 
 # install composer
 wget https://getcomposer.org/download/1.0.0-alpha11/composer.phar -O /usr/local/bin/composer 2>&1

@@ -75,9 +75,6 @@ Vagrant.configure(2) do |conf|
       "
     end
 
-    # service state provisioner
-    service conf, { start: ['redis', 'mysqld', 'httpd', 'varnish', 'nginx'], reload: ['sshd'] }
-
     # magento2 install provisioner
     conf.vm.provision :shell do |conf|
       conf.name = "m2install.sh"
@@ -98,19 +95,5 @@ Vagrant.configure(2) do |conf|
         printf 'ip address: %s\nhostname: %s\n' \"$ip_address\" \"$(hostname)\"
       "
     end
-  end
-end
-
-def service conf, calls
-  service_sh = ""
-  calls.each do | key, val |
-    val.each do | val |
-      service_sh = "#{service_sh}\nservice #{val} #{key}"
-    end
-  end
-
-  conf.vm.provision :shell, run: 'always' do |conf|
-    conf.name = "service_sh"
-    conf.inline = service_sh
   end
 end
