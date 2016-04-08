@@ -87,6 +87,7 @@ logrun mr setup:install                         \
 
 rm -rf var/di/ var/generation/
 logrun mr setup:di:compile-multi-tenant
+rm -f var/di/relations.ser                     # TODO: remove temp fix when GH Issue #4070 is resolved
 
 ########################################
 :: generating static content
