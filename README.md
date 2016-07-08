@@ -3,7 +3,7 @@
 A complete demo environment powered by Vagrant using either Digital Ocean or Virtual Box as a provider.
 
 ## The Stack
-This builds a virtual machine running Cent OS 6.7, MySql 5.6, PHP 7.0, Nginx 1.8, and Varnish 4.1 and installs Magento 2.0 complete with sample data. By default, Community Edition is installed, but this can be changed to install Enterprise Edition in the config.rb file for those who have access.
+This builds a virtual machine running Cent OS 6.7, MySql 5.6, PHP 7.0, Nginx 1.8, and Varnish 4.1 and installs the latest stable release of Magento 2 complete with sample data. By default, Community Edition is installed, but this can be changed to install Enterprise Edition in the config.rb file for those who have access.
 
 ## Requirements
 

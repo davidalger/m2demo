@@ -86,7 +86,7 @@ logrun mr setup:install                         \
 :: compiling dependency injection
 
 rm -rf var/di/ var/generation/
-logrun mr setup:di:compile-multi-tenant
+logrun mr setup:di:compile
 
 ########################################
 :: generating static content
