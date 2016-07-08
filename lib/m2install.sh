@@ -35,7 +35,10 @@ admin_user=admin
 admin_email=demouser@example.com
 admin_first=Demo
 admin_last=User
-admin_pass="$(openssl rand -base64 12)" # Note: It's possible this will ocassionally fail install due to lack of number
+admin_pass="$(printf "%s%s%s" \
+    $(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 7 | head -n1) \
+    $(cat /dev/urandom | env LC_CTYPE=C tr -dc '0-9' | fold -w 2 | head -n1) \
+    $(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 7 | head -n1))"
 admin_url="$base_url/$backend_frontname/admin"  # TODO: update after secure urls are enabled
 
 ########################################
