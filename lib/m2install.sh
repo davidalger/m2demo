@@ -115,11 +115,11 @@ mr -q cache:flush
 ########################################
 :: setting file permissions and ownership
 
-find $install_dir -type d -exec chmod 770 {} +
-find $install_dir -type f -exec chmod 660 {} +
+find $install_dir $COMPOSER_HOME -type d -exec chmod 770 {} +
+find $install_dir $COMPOSER_HOME -type f -exec chmod 660 {} +
 
-chmod -R g+s $install_dir
-chown -R www-data:www-data $install_dir
+chmod -R g+s $install_dir $COMPOSER_HOME
+chown -R www-data:www-data $install_dir $COMPOSER_HOME
 
 chmod +x $install_dir/bin/magento
 
