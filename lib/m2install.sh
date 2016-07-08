@@ -87,7 +87,6 @@ logrun mr setup:install                         \
 
 rm -rf var/di/ var/generation/
 logrun mr setup:di:compile-multi-tenant
-rm -f var/di/relations.ser                     # TODO: remove temp fix when GH Issue #4070 is resolved
 
 ########################################
 :: generating static content
@@ -128,11 +127,6 @@ chmod +x $install_dir/bin/magento
 :: configuring crontab worker
 
 crontab -u www-data <(echo '* * * * * /var/www/magento2/bin/magento cron:run >> /var/www/magento2/var/log/cron.log')
-
-########################################
-:: implimenting workaround for GH \#2711
-
-ln -s $install_dir/pub $install_dir/pub/pub     # TODO: remove temp fix when GH Issue #2711 is resolved
 
 ########################################
 :: demo site information
