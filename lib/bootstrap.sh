@@ -28,7 +28,7 @@ printf "\n$ip_address $(hostname)\n" >> /etc/hosts
 sed -i 's/keepcache=0/keepcache=1\nmetadata_expire=12h/' /etc/yum.conf
 
 # append exclude rule to avoid updating the yum tool and kernel packages (causes issues with VM Ware tools on re-create)
-printf "\n\nexclude=yum kernel*\n" >> /etc/yum.conf
+printf "\n\nexclude=yum nfs-utils util-linux-ng libuuid libblkid kernel*\n" >> /etc/yum.conf
 
 # import gpg keys before installing anything
 rpm --import ./etc/keys/RPM-GPG-KEY-CentOS-6.txt
