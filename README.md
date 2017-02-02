@@ -8,6 +8,7 @@ This builds a virtual machine running Cent OS 6.7, MySql 5.6, PHP 7.0, Nginx 1.8
 ## Requirements
 
 * Vagrant 1.7.4 or higher ([installation instructions](https://www.vagrantup.com/docs/installation/))
+* Vagrant Host Manager ([GitHub](https://github.com/devopsgroup-io/vagrant-hostmanager))
 * Virtual Box (if used as provider)
 * Digital Ocean API access (if used as provider)
 * Magento Marketplace [access credentials](http://devdocs.magento.com/guides/v2.0/install-gde/prereq/connect-auth.html#auth-get)
@@ -19,8 +20,7 @@ This builds a virtual machine running Cent OS 6.7, MySql 5.6, PHP 7.0, Nginx 1.8
 3. Copy the `etc/config.rb.sample` file to `etc/config.rb` and update the placeholder values (values may be left unchanged for providers you do not plan on utilizing)
 4. If you have Enterprise Edition access, set `MAGENTO_IS_ENTERPRISE` to `true` in `etc/config.rb`
 4. Run `vagrant up` to kick off virtual machine provisioning and install Magento 2. By default, Virtual Box is used as a provider. To use Digital Ocean, run `vagrant up --provider digital_ocean` instead
-5. Add an entry to your `/etc/hosts` file using the IP address and hostname output near end of `vagrant up` run
-6. Load up your new demo site in a browser!
+6. Load up your new demo site in a browser using the provided information!
 
 ## Known Issues
 

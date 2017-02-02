@@ -1,6 +1,6 @@
 
 # Box hostname and domain Magento 2 will be configured with
-CONF_VM_HOSTNAME = 'm2demo.example.com'
+CONF_VM_HOSTNAME = 'magento2.demo'
 
 # Digital Ocean Configuration
 CONF_DO_TOKEN = '<digitalocean_token>'

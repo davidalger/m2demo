@@ -12,15 +12,23 @@ FILTERS_DIR = '/vagrant/etc/filters'
 
 require_relative 'etc/config.rb'
 
+unless Vagrant.has_plugin? 'vagrant-hostmanager'
+  raise "Error: please run `vagrant plugin install vagrant-hostmanager` and try again"
+end
+
 Vagrant.require_version '>= 1.7.4'
 Vagrant.configure(2) do |conf|
+  conf.hostmanager.enabled = true
+  conf.hostmanager.manage_host = true
+  conf.hostmanager.include_offline = true
+
   conf.vm.define :m2demo do |conf|
     conf.vm.hostname = CONF_VM_HOSTNAME
 
     # virtualbox specific configuration
     conf.vm.provider :virtualbox do |provider, conf|
       conf.vm.box = 'bento/centos-6.7'
-      conf.vm.network :private_network, type: 'dhcp'
+      conf.vm.network :private_network, ip: '192.168.19.76'
 
       provider.memory = 4096
       provider.cpus = 2
@@ -82,17 +90,6 @@ Vagrant.configure(2) do |conf|
         export DEMO_HOSTNAME=#{CONF_VM_HOSTNAME}
         export IS_ENTERPRISE=#{MAGENTO_IS_ENTERPRISE ? '1' : ''}
         /vagrant/lib/m2install.sh
-      "
-    end
-    
-    # always output guest machine information on load
-    conf.vm.provision :shell, run: 'always' do |conf|
-      conf.name = "vm-info"
-      conf.inline = "
-        # use info from eth1 if available, otherwise eth0
-        interface=$(ifconfig eth1 | grep 'inet addr' > /dev/null 2>&1 && echo eth1 || echo eth0)
-        ip_address=$(ifconfig $interface | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}')
-        printf 'ip address: %s\nhostname: %s\n' \"$ip_address\" \"$(hostname)\"
       "
     end
   end
