@@ -125,6 +125,46 @@ yum --enablerepo=remi --enablerepo=remi-php70 install -y php-fpm php-cli php-opc
     php-mysqlnd php-mhash php-curl php-gd php-intl php-mcrypt php-xsl php-mbstring php-soap php-bcmath php-zip
 
 ########################################
+:: generating self-signed certificate
+########################################
+
+# create dhparams
+mkdir -p /etc/nginx/ssl
+openssl dhparam -out /etc/nginx/ssl/dhparam.pem 1024 2> /dev/null
+
+# create a CA root certificate
+mkdir -p /etc/nginx/ssl/rootca/{certs,crl,newcerts,private}
+touch /etc/nginx/ssl/rootca/index.txt
+echo 1000 > /etc/nginx/ssl/rootca/serial
+
+openssl genrsa -out /etc/nginx/ssl/rootca/private/m2demo-ca.key.pem 4096 2> /dev/null
+
+openssl req -config /etc/openssl/rootca.conf -new -x509 -days 7300 -sha256 -extensions v3_ca \
+    -key /etc/nginx/ssl/rootca/private/m2demo-ca.key.pem \
+    -out /etc/nginx/ssl/rootca/certs/m2demo-ca.cert.pem \
+    -subj "/C=US/O=Magento2 DemoBox"
+
+# add local CA root to the trusted key-store and enable Shared System Certificates
+cp /etc/nginx/ssl/rootca/certs/m2demo-ca.cert.pem /etc/pki/ca-trust/source/anchors/m2demo-ca.key.pem
+
+update-ca-trust
+update-ca-trust enable
+
+# create private key for self-signed certificate
+openssl genrsa -out /etc/nginx/ssl/m2demo.key.pem 4096 2> /dev/null
+
+# create self-signed certificate for demo site
+SAN="DNS.1:$DEMO_HOSTNAME" openssl req -new -sha256 \
+    -key /etc/nginx/ssl/m2demo.key.pem \
+    -out /etc/nginx/ssl/m2demo.csr.pem \
+    -config /etc/openssl/vhost.conf \
+    -subj "/C=US/CN=$DEMO_HOSTNAME"
+
+yes | openssl ca -config /etc/openssl/rootca.conf -extensions server_cert -days 375 -notext -md sha256 \
+    -in /etc/nginx/ssl/m2demo.csr.pem \
+    -out /etc/nginx/ssl/m2demo.crt.pem 2> /dev/null
+
+########################################
 :: configuring web services
 ########################################
 

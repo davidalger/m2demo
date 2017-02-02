@@ -76,6 +76,7 @@ Vagrant.configure(2) do |conf|
         export GITHUB_TOKEN=#{GITHUB_TOKEN}
         export MAGENTO_KEY_USER=#{MAGENTO_KEY_USER}
         export MAGENTO_KEY_PASS=#{MAGENTO_KEY_PASS}
+        export DEMO_HOSTNAME=#{CONF_VM_HOSTNAME}
         
         /vagrant/lib/bootstrap.sh \
             > >(tee -a #{bootstrap_log} >(stdbuf -oL grep -E '^:: ') > /dev/null) \
