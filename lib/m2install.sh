@@ -80,9 +80,10 @@ logrun mr setup:install                         \
     --db-user=root                              \
     --db-name=$db_name                          \
     --magento-init-params='MAGE_MODE=production'\
-    --use-secure=1                              \
-    --use-secure-admin=1                        \
 ;
+    # TODO: included these flags once ssl support is added
+    #--use-secure=1                              \
+    #--use-secure-admin=1                        \
 
 ########################################
 :: compiling dependency injection
