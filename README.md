@@ -16,7 +16,7 @@
 
 2. Build and start the environment.
 
-        ~/Sites/m2demo
+        time ~/Sites/m2demo/start.sh
 
 3. Launch the site in your browser and login using information provided in the script output.
 
