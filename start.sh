@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -eu
-trap '>&2 printf "\n\e[01;31mError: Command \`%s\` on line $LINENO failed with exit code $?\033[0m\n" "$BASH_COMMAND"' ERR
+trap '>&2 printf "\n\e[01;31mERROR\033[0m: Command \`%s\` on line $LINENO failed with exit code $?\n" "$BASH_COMMAND"' ERR
 
 function :: {
     echo
@@ -23,8 +23,8 @@ cd "${BASE_DIR}"
 source .env
 ADMIN_PASS="$(openssl rand -base64 32 | sed 's/[^a-zA-Z0-9]//g' | colrm 17)"
 ADMIN_USER=demoadmin
-URL_FRONT="https:://${TRAEFIK_SUBDOMAIN}.${TRAEFIK_DOMAIN}/"
-URL_ADMIN="https:://${TRAEFIK_SUBDOMAIN}.${TRAEFIK_DOMAIN}/backend/"
+URL_FRONT="https://${TRAEFIK_SUBDOMAIN}.${TRAEFIK_DOMAIN}/"
+URL_ADMIN="https://${TRAEFIK_SUBDOMAIN}.${TRAEFIK_DOMAIN}/backend/"
 
 :: Starting Warden
 warden up
