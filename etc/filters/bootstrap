@@ -1,5 +1,0 @@
-^npm http GET
-^npm http 304
-^npm http 200
-^Trying other mirror
-^(http|https)://.*/repomd.xml: \[Errno 14\] PYCURL ERROR 6 - "Couldn't resolve host '.*'"$

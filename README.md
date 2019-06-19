@@ -1,27 +1,25 @@
-# Vagrant Magento 2 Demo
+# Magento Demo Environment
 
-A complete demo environment powered by Vagrant using either Digital Ocean or Virtual Box as a provider.
+## Prerequisites
 
-## The Stack
-This builds a virtual machine running Cent OS 6.7, MySql 5.6, PHP 7.0, Nginx 1.8, and Varnish 4.1 and installs the latest stable release of Magento 2 complete with sample data. By default, Community Edition is installed, but this can be changed to install Enterprise Edition in the config.rb file for those who have access.
+* [Homebrew](https://brew.sh) package manager (for installing Warden)
+* [Docker for Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac) or [Docker for Linux](https://docs.docker.com/install/linux/docker-ce/fedora/) (currently tested on Fedora 29)
+* `docker-compose` available in your `$PATH` (included in Docker for Mac, can be installed via brew on Linux hosts)
+* [Warden](https://warden.dev/) installed via Homebrew.
 
-## Requirements
+## Building Environment
 
-* Vagrant 1.7.4 or higher ([installation instructions](https://www.vagrantup.com/docs/installation/))
-* Vagrant Host Manager ([GitHub](https://github.com/devopsgroup-io/vagrant-hostmanager))
-* Virtual Box (if used as provider)
-* Digital Ocean API access (if used as provider)
-* Magento Marketplace [access credentials](http://devdocs.magento.com/guides/v2.0/install-gde/prereq/connect-auth.html#auth-get)
+1. Clone this repository.
 
-## Installation / Usage
+        mkdir -p ~/Sites/m2demo
+        git clone git@github.com:davidalger/m2demo.git ~/Sites/m2demo
 
-1. Verify you have all the required dependencies as listed above
-2. Clone this repository
-3. Copy the `etc/config.rb.sample` file to `etc/config.rb` and update the placeholder values (values may be left unchanged for providers you do not plan on utilizing)
-4. If you have Enterprise Edition access, set `MAGENTO_IS_ENTERPRISE` to `true` in `etc/config.rb`
-4. Run `vagrant up` to kick off virtual machine provisioning and install Magento 2. By default, Virtual Box is used as a provider. To use Digital Ocean, run `vagrant up --provider digital_ocean` instead
-6. Load up your new demo site in a browser using the provided information!
+2. Build and start the environment.
 
-## Known Issues
+        ~/Sites/m2demo
 
-* There is currently no support for SSL in the virtual machine
+3. Launch the site in your browser and login using information provided in the script output.
+
+## License
+
+This work is licensed under the MIT license. See LICENSE file for details.
