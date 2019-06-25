@@ -33,10 +33,10 @@ if [[ ! -f ~/.warden/ssl/certs/magento.test.crt.pem ]]; then
 fi
 
 :: Initializing environment
-docker-compose up -d
+warden env up -d
 
 :: Installing Magento
-docker-compose exec -T php-fpm bin/magento setup:install \
+warden env exec -T php-fpm bin/magento setup:install \
     --backend-frontname=backend \
     --amqp-host=rabbitmq \
     --amqp-port=5672 \
@@ -62,25 +62,25 @@ docker-compose exec -T php-fpm bin/magento setup:install \
     --page-cache-redis-port=6379
 
 :: Configuring Magento
-docker-compose exec -T php-fpm bin/magento config:set -q --lock-env web/unsecure/base_url ${URL_FRONT}
-docker-compose exec -T php-fpm bin/magento config:set -q --lock-env web/secure/base_url ${URL_FRONT}
-docker-compose exec -T php-fpm bin/magento config:set -q --lock-env web/secure/use_in_frontend 1
-docker-compose exec -T php-fpm bin/magento config:set -q --lock-env web/secure/use_in_adminhtml 1
-docker-compose exec -T php-fpm bin/magento config:set -q --lock-env web/seo/use_rewrites 1
-docker-compose exec -T php-fpm bin/magento config:set -q --lock-env system/full_page_cache/caching_application 2
+warden env exec -T php-fpm bin/magento config:set -q --lock-env web/unsecure/base_url ${URL_FRONT}
+warden env exec -T php-fpm bin/magento config:set -q --lock-env web/secure/base_url ${URL_FRONT}
+warden env exec -T php-fpm bin/magento config:set -q --lock-env web/secure/use_in_frontend 1
+warden env exec -T php-fpm bin/magento config:set -q --lock-env web/secure/use_in_adminhtml 1
+warden env exec -T php-fpm bin/magento config:set -q --lock-env web/seo/use_rewrites 1
+warden env exec -T php-fpm bin/magento config:set -q --lock-env system/full_page_cache/caching_application 2
 
 :: Enabling production mode
-docker-compose exec -T php-fpm bin/magento deploy:mode:set -s production
-docker-compose exec -T php-fpm bin/magento setup:static-content:deploy -j $(nproc)
+warden env exec -T php-fpm bin/magento deploy:mode:set -s production
+warden env exec -T php-fpm bin/magento setup:static-content:deploy -j $(nproc)
 
 :: Rebuilding Magento indexers
-docker-compose exec -T php-fpm bin/magento indexer:reindex
+warden env exec -T php-fpm bin/magento indexer:reindex
 
 :: Flushing the cache
-docker-compose exec -T php-fpm bin/magento cache:clean
+warden env exec -T php-fpm bin/magento cache:clean
 
 :: Creating admin user
-docker-compose exec -T php-fpm bin/magento admin:user:create \
+warden env exec -T php-fpm bin/magento admin:user:create \
     --admin-password="${ADMIN_PASS}" \
     --admin-user="${ADMIN_USER}" \
     --admin-firstname="Demo" \
