@@ -20,6 +20,16 @@
 
 3. Launch the site in your browser and login using information provided in the script output.
 
+## Destroying Environment
+
+1. Change into the demo environment's local directory.
+
+        cd ~/Sites/m2demo
+
+2. Tear down containers, volumes, networks, etc.
+
+        warden env down -v
+
 ## License
 
 This work is licensed under the MIT license. See LICENSE file for details.
