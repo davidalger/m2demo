@@ -40,7 +40,7 @@ fi
 warden env up -d
 
 :: Installing Magento
-warden env exec -T php-fpm bin/magento setup:install \
+warden env exec -- -T php-fpm bin/magento setup:install \
     --backend-frontname=backend \
     --amqp-host=rabbitmq \
     --amqp-port=5672 \
