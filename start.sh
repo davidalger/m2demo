@@ -26,6 +26,10 @@ ADMIN_USER=demoadmin
 URL_FRONT="https://${TRAEFIK_SUBDOMAIN}.${TRAEFIK_DOMAIN}/"
 URL_ADMIN="https://${TRAEFIK_SUBDOMAIN}.${TRAEFIK_DOMAIN}/backend/"
 
+## increase the docker-compose timeout since it can take some time to create the
+## container volume due to the size of sample data copied into the volume on start
+export COMPOSE_HTTP_TIMEOUT=180
+
 :: Starting Warden
 warden up
 if [[ ! -f ~/.warden/ssl/certs/magento.test.crt.pem ]]; then
