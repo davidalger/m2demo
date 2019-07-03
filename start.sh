@@ -21,10 +21,16 @@ cd "${BASE_DIR}"
 
 ## load configuration needed for installation
 source .env
-ADMIN_PASS="$(openssl rand -base64 32 | sed 's/[^a-zA-Z0-9]//g' | colrm 17)"
+ADMIN_PASS=
 ADMIN_USER=demoadmin
 URL_FRONT="https://${TRAEFIK_SUBDOMAIN}.${TRAEFIK_DOMAIN}/"
 URL_ADMIN="https://${TRAEFIK_SUBDOMAIN}.${TRAEFIK_DOMAIN}/backend/"
+
+## generate admin password trying up to 10 iterations to ensure we get one with a number
+i=0
+while (( i++ <10 )) && [[ ! ${ADMIN_PASS} =~ ^.*[0-9]+.*$ ]]; do
+  ADMIN_PASS="$(openssl rand -base64 32 | sed 's/[^a-zA-Z0-9]//g' | colrm 17)"
+done
 
 ## increase the docker-compose timeout since it can take some time to create the
 ## container volume due to the size of sample data copied into the volume on start
