@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-* [Homebrew](https://brew.sh) package manager (for installing Warden)
-* [Docker for Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac) or [Docker for Linux](https://docs.docker.com/install/linux/docker-ce/fedora/) (currently tested on Fedora 29)
-* `docker-compose` available in your `$PATH` (included in Docker for Mac, can be installed via brew on Linux hosts)
+* [Homebrew](https://brew.sh/) package manager (for installing Warden and other dependencies)
+* [Docker for Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac) or [Docker for Linux](https://docs.docker.com/install/) (tested on Fedora 29 and Ubuntu 18.10)
+* `docker-compose` available in your `$PATH` (included with Docker for Mac, can be installed via `brew`, `apt` or `dnf` on Linux)
 * [Warden](https://warden.dev/) installed via Homebrew.
 
 ## Building Environment
