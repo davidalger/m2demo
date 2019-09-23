@@ -44,14 +44,23 @@ fi
 
 :: Initializing environment
 warden env up -d
+sleep 2   ## Allow db container time to start before proceeding
+
+## Only 2.3 and later support amqp params being specified
+AMQP_PARAMS=
+if (( $(echo ${MAGENTO_VERSION:-2.3} | tr . " " | awk '{print $1$2}') > 22 )); then
+  AMQP_PARAMS="
+    --amqp-host=rabbitmq
+    --amqp-port=5672
+    --amqp-user=guest
+    --amqp-password=guest
+  "
+fi
 
 :: Installing Magento
 warden env exec -- -T php-fpm bin/magento setup:install \
     --backend-frontname=backend \
-    --amqp-host=rabbitmq \
-    --amqp-port=5672 \
-    --amqp-user=guest \
-    --amqp-password=guest \
+    ${AMQP_PARAMS} \
     --db-host=db \
     --db-name=magento \
     --db-user=magento \
