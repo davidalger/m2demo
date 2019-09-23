@@ -7,6 +7,13 @@
 * `docker-compose` available in your `$PATH` (included with Docker for Mac, can be installed via `brew`, `apt` or `dnf` on Linux)
 * [Warden](https://warden.dev/) installed via Homebrew.
 
+## Docker Images
+
+The base images used by this demo environment can be found on Docker Hub or on Github at the following locations:
+
+* https://github.com/davidalger/docker-images-warden
+* https://github.com/davidalger/docker-images-magento
+
 ## Building Environment
 
 1. Clone this repository.
