@@ -90,7 +90,6 @@ warden env exec -T php-fpm bin/magento config:set -q --lock-env system/full_page
 
 :: Enabling production mode
 warden env exec -T php-fpm bin/magento deploy:mode:set -s production
-warden env exec -T php-fpm bin/magento setup:static-content:deploy -j $(nproc)
 
 :: Rebuilding Magento indexers
 warden env exec -T php-fpm bin/magento indexer:reindex
