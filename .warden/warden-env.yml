@@ -23,11 +23,20 @@ services:
       - warden
       - default
 
+  ## this is here to essentially function as an init-container copying artifact files into
+  ## warden FPM container and then exiting
+  magento:
+    image: davidalger/magento:${MAGENTO_VERSION:-2.3}-sampledata
+    volumes:
+      - appdata:/var/www/html
+    command: ["chown", "-R", "1000:1000", "/var/www/html"]
+
   php-fpm:
     hostname: php-fpm
-    image: davidalger/magento:${MAGENTO_VERSION:-2.3}-sampledata
+    image: davidalger/warden:mage2-fpm-${PHP_VERSION:-7.2}
     depends_on:
       - db
+      - magento
     volumes:
       - appdata:/var/www/html
 
