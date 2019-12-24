@@ -44,7 +44,9 @@ fi
 
 :: Initializing environment
 warden env up -d
-sleep 30   ## Allow db container time to start and import artifact
+
+## wait for mariadb to start listening for connections
+warden shell -c "while ! nc -z db 3306 </dev/null; do sleep 2; done"
 
 ## Only 2.3 and later support amqp params being specified
 AMQP_PARAMS=
