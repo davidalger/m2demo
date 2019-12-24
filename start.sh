@@ -44,7 +44,7 @@ fi
 
 :: Initializing environment
 warden env up -d
-sleep 2   ## Allow db container time to start before proceeding
+sleep 30   ## Allow db container time to start and import artifact
 
 ## Only 2.3 and later support amqp params being specified
 AMQP_PARAMS=
