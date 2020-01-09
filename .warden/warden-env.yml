@@ -1,102 +1,41 @@
 version: "3.5"
-
 services:
-
+  ## override volumes to eliminate bind mounts
   nginx:
-    hostname: nginx
-    image: davidalger/warden:nginx-${NGINX_VERSION:-1.16}-alpine
-    depends_on:
-      - db
-      - php-fpm
     volumes:
-      - appdata:/var/www/html
+      - appmedia:/var/www/html/pub/media
 
-  varnish:
-    hostname: varnish
-    image: davidalger/warden:varnish-${VARNISH_VERSION:-4.1}-alpine
+  ## override volumes to eliminate bind mounts; depend on init container to ensure start order
+  php-fpm:
+    volumes:
+      - composer:/home/www-data/.composer
+      - appmedia:/var/www/html/pub/media
+      - rootcert:/etc/ssl/warden-rootca-cert
     depends_on:
-      - nginx
-    labels:
-      - traefik.enable=true
-      - traefik.frontend.rule=Host:${TRAEFIK_SUBDOMAIN:-app}.${TRAEFIK_DOMAIN}
-    networks:
-      - warden
-      - default
+      - magento-init
 
-  ## this is here to essentially function as an init-container copying artifact files into
-  ## warden FPM container and then exiting
-  magento:
+  ## override volumes to eliminate bind mounts; depend on init container to ensure start order
+  php-debug:
+    volumes:
+      - composer:/home/www-data/.composer
+      - appmedia:/var/www/html/pub/media
+      - rootcert:/etc/ssl/warden-rootca-cert
+    depends_on:
+      - magento-init
+
+  ## change database image to one with pre-built sql artifact for import on container start
+  db:
+    image: davidalger/magento:${MAGENTO_VERSION:-2.3}-mariadb-sampledata
+
+  ## functions as an init-container copying artifact files onto appdata volume then exits
+  magento-init:
     image: davidalger/magento:${MAGENTO_VERSION:-2.3}-sampledata
     volumes:
       - appdata:/var/www/html
+      - appmedia:/var/www/html/pub/media
     command: ["chown", "-R", "1000:1000", "/var/www/html"]
 
-  php-fpm:
-    hostname: php-fpm
-    image: davidalger/warden:mage2-fpm-${PHP_VERSION:-7.3}
-    depends_on:
-      - db
-      - magento
-    volumes:
-      - appdata:/var/www/html
-
-  db:
-    hostname: mariadb
-    image: davidalger/magento:${MAGENTO_VERSION:-2.3}-mariadb-sampledata
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-magento}
-      - MYSQL_DATABASE=${MYSQL_DATABASE:-magento}
-      - MYSQL_USER=${MYSQL_USER:-magento}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-magento}
-    volumes:
-      - dbdata:/var/lib/mysql
-    networks:
-      - warden
-      - default
- 
-  elasticsearch:
-    hostname: elasticsearch
-    image: davidalger/warden:elasticsearch-${ELASTICSEARCH_VERSION:-6.8}
-    labels:
-      - traefik.enable=true
-      - traefik.port=9200
-      - traefik.frontend.rule=Host:elasticsearch.${TRAEFIK_DOMAIN}
-    environment:
-      - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms64m -Xmx512m"
-    volumes:
-      - esdata:/usr/share/elasticsearch/data
-    networks:
-      - warden
-      - default
-
-  redis:
-    hostname: redis
-    image: redis:${REDIS_VERSION:-5.0}-alpine
-
-  rabbitmq:
-    hostname: rabbitmq
-    image: rabbitmq:${RABBITMQ_VERSION:-3.7.14}-management-alpine
-    labels:
-      - traefik.enable=true
-      - traefik.port=15672
-      - traefik.frontend.rule=Host:rabbitmq.${TRAEFIK_DOMAIN}
-    networks:
-      - warden
-      - default
-
-  mailhog:
-    hostname: mailhog
-    image: mailhog/mailhog:${MAILHOG_VERSION:-v1.0.0}
-    labels:
-      - traefik.enable=true
-      - traefik.port=8025
-      - traefik.frontend.rule=Host:mailhog.${TRAEFIK_DOMAIN}
-    networks:
-      - warden
-      - default
-
 volumes:
-  appdata:
-  dbdata:
-  esdata:
+  rootcert: {}
+  composer: {}
+  appmedia: {}
