@@ -93,12 +93,6 @@ warden env exec -T php-fpm bin/magento config:set -q --lock-env system/full_page
 :: Enabling production mode
 warden env exec -T php-fpm bin/magento deploy:mode:set -s production
 
-:: Rebuilding Magento indexers
-warden env exec -T php-fpm bin/magento indexer:reindex
-
-:: Flushing the cache
-warden env exec -T php-fpm bin/magento cache:clean
-
 :: Creating admin user
 warden env exec -T php-fpm bin/magento admin:user:create \
     --admin-password="${ADMIN_PASS}" \
@@ -106,6 +100,9 @@ warden env exec -T php-fpm bin/magento admin:user:create \
     --admin-firstname="Demo" \
     --admin-lastname="User" \
     --admin-email="${ADMIN_USER}@example.com"
+
+:: Flushing the cache
+warden env exec -T php-fpm bin/magento cache:flush
 
 :: Demo build complete
 function print_install_info {
