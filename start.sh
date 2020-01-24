@@ -21,16 +21,8 @@ cd "${BASE_DIR}"
 
 ## load configuration needed for installation
 source .env
-ADMIN_PASS=
-ADMIN_USER=demoadmin
 URL_FRONT="https://${TRAEFIK_SUBDOMAIN}.${TRAEFIK_DOMAIN}/"
 URL_ADMIN="https://${TRAEFIK_SUBDOMAIN}.${TRAEFIK_DOMAIN}/backend/"
-
-## generate admin password trying up to 10 iterations to ensure we get one with a number
-i=0
-while (( i++ <10 )) && [[ ! ${ADMIN_PASS} =~ ^.*[0-9]+.*$ ]]; do
-  ADMIN_PASS="$(openssl rand -base64 32 | sed 's/[^a-zA-Z0-9]//g' | colrm 17)"
-done
 
 ## increase the docker-compose timeout since it can take some time to create the
 ## container volume due to the size of sample data copied into the volume on start
@@ -94,6 +86,9 @@ warden env exec -T php-fpm bin/magento config:set -q --lock-env system/full_page
 warden env exec -T php-fpm bin/magento deploy:mode:set -s production
 
 :: Creating admin user
+ADMIN_PASS=$(warden env exec -T php-fpm pwgen -n1 16)
+ADMIN_USER=localadmin
+
 warden env exec -T php-fpm bin/magento admin:user:create \
     --admin-password="${ADMIN_PASS}" \
     --admin-user="${ADMIN_USER}" \
