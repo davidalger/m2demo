@@ -2,16 +2,13 @@
 
 ## Prerequisites
 
-* [Homebrew](https://brew.sh/) package manager (for installing Warden and other dependencies)
-* [Docker for Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac) or [Docker for Linux](https://docs.docker.com/install/) (tested on Fedora 29 and Ubuntu 18.10)
-* `docker-compose` available in your `$PATH` (included with Docker for Mac, can be installed via `brew`, `apt` or `dnf` on Linux)
-* [Warden](https://warden.dev/) installed via Homebrew.
+* [Warden](https://warden.dev/) 0.2.0 or later is installed. Reference documentation on [Installing Warden](https://docs.warden.dev/installing.html) for further info on Warden requirements and install procedures.
 
 ## Docker Images
 
 The base images used by this demo environment can be found on Docker Hub or on Github at the following locations:
 
-* https://github.com/davidalger/docker-images-warden
+* https://github.com/davidalger/warden/tree/develop/images
 * https://github.com/davidalger/docker-images-magento
 
 ## Building Environment

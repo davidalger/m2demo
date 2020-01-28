@@ -77,13 +77,30 @@ warden env exec -- -T php-fpm bin/magento setup:install \
 :: Configuring Magento
 warden env exec -T php-fpm bin/magento config:set -q --lock-env web/unsecure/base_url ${URL_FRONT}
 warden env exec -T php-fpm bin/magento config:set -q --lock-env web/secure/base_url ${URL_FRONT}
+
 warden env exec -T php-fpm bin/magento config:set -q --lock-env web/secure/use_in_frontend 1
 warden env exec -T php-fpm bin/magento config:set -q --lock-env web/secure/use_in_adminhtml 1
 warden env exec -T php-fpm bin/magento config:set -q --lock-env web/seo/use_rewrites 1
+
 warden env exec -T php-fpm bin/magento config:set -q --lock-env system/full_page_cache/caching_application 2
+warden env exec -T php-fpm bin/magento config:set -q --lock-env system/full_page_cache/ttl 604800
+
+warden env exec -T php-fpm bin/magento config:set -q --lock-env catalog/search/engine elasticsearch6
+warden env exec -T php-fpm bin/magento config:set -q --lock-env catalog/search/enable_eav_indexer 1
+warden env exec -T php-fpm bin/magento config:set -q --lock-env catalog/search/elasticsearch6_server_hostname elasticsearch
+warden env exec -T php-fpm bin/magento config:set -q --lock-env catalog/search/elasticsearch6_server_port 9200
+warden env exec -T php-fpm bin/magento config:set -q --lock-env catalog/search/elasticsearch6_index_prefix magento2
+warden env exec -T php-fpm bin/magento config:set -q --lock-env catalog/search/elasticsearch6_enable_auth 0
+warden env exec -T php-fpm bin/magento config:set -q --lock-env catalog/search/elasticsearch6_server_timeout 15
 
 :: Enabling production mode
 warden env exec -T php-fpm bin/magento deploy:mode:set -s production
+
+:: Rebuilding indexes
+warden env exec -T php-fpm bin/magento indexer:reindex
+
+:: Flushing the cache
+warden env exec -T php-fpm bin/magento cache:flush
 
 :: Creating admin user
 ADMIN_PASS=$(warden env exec -T php-fpm pwgen -n1 16)
@@ -95,9 +112,6 @@ warden env exec -T php-fpm bin/magento admin:user:create \
     --admin-firstname="Demo" \
     --admin-lastname="User" \
     --admin-email="${ADMIN_USER}@example.com"
-
-:: Flushing the cache
-warden env exec -T php-fpm bin/magento cache:flush
 
 :: Demo build complete
 function print_install_info {
