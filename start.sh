@@ -40,21 +40,14 @@ warden env up -d
 ## wait for mariadb to start listening for connections
 warden shell -c "while ! nc -z db 3306 </dev/null; do sleep 2; done"
 
-## Only 2.3 and later support amqp params being specified
-AMQP_PARAMS=
-if (( $(echo ${MAGENTO_VERSION:-2.3} | tr . " " | awk '{print $1$2}') > 22 )); then
-  AMQP_PARAMS="
-    --amqp-host=rabbitmq
-    --amqp-port=5672
-    --amqp-user=guest
-    --amqp-password=guest
-  "
-fi
-
 :: Installing Magento
 warden env exec -- -T php-fpm bin/magento setup:install \
     --backend-frontname=backend \
-    ${AMQP_PARAMS} \
+    --amqp-host=rabbitmq \
+    --amqp-port=5672 \
+    --amqp-user=guest \
+    --amqp-password=guest \
+    --consumers-wait-for-messages=0 \
     --db-host=db \
     --db-name=magento \
     --db-user=magento \
