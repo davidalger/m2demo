@@ -18,7 +18,7 @@ The base images used by this demo environment can be found on Docker Hub or on G
         mkdir -p ~/Sites/m2demo
         git clone git@github.com:davidalger/m2demo.git ~/Sites/m2demo
 
-2. Build and start the environment.
+2. Build and start the environment (optionally passing the `--no-sampledata` flag):
 
         time ~/Sites/m2demo/start.sh
 

@@ -28,6 +28,28 @@ URL_ADMIN="https://${TRAEFIK_SUBDOMAIN}.${TRAEFIK_DOMAIN}/backend/"
 ## container volume due to the size of sample data copied into the volume on start
 export COMPOSE_HTTP_TIMEOUT=180
 
+## argument parsing
+## parse arguments
+while (( "$#" )); do
+    case "$1" in
+        --no-sampledata)
+            export MAGENTO_VARIANT=
+            shift
+            ;;
+        --help)
+            echo "Usage: $(basename $0) [--no-sampledata]"
+            echo ""
+            echo "       --no-sampledata                    starts m2demo using demo images without sampledata"
+            echo ""
+            exit -1
+            ;;
+        *)
+            >&2 printf "\e[01;31mERROR\033[0m: Unrecognized argument '$1'\n"
+            exit -1
+            ;;
+    esac
+done
+
 :: Starting Warden
 warden up
 if [[ ! -f ~/.warden/ssl/certs/magento.test.crt.pem ]]; then

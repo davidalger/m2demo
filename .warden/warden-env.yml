@@ -25,11 +25,11 @@ services:
 
   ## change database image to one with pre-built sql artifact for import on container start
   db:
-    image: davidalger/magento:${MAGENTO_VERSION:-2.3}-mariadb-sampledata
+    image: ${MAGENTO_REPOSITORY:-davidalger/magento}:${MAGENTO_VERSION:-2.3}-mariadb${MAGENTO_VARIANT:-}
 
   ## functions as an init-container copying artifact files onto appdata volume then exits
   magento-init:
-    image: davidalger/magento:${MAGENTO_VERSION:-2.3}-sampledata
+    image: ${MAGENTO_REPOSITORY:-davidalger/magento}:${MAGENTO_VERSION:-2.3}${MAGENTO_VARIANT:-}
     volumes:
       - appdata:/var/www/html
       - appmedia:/var/www/html/pub/media
