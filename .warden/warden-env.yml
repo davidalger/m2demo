@@ -3,23 +3,26 @@ services:
   ## override volumes to eliminate bind mounts
   nginx:
     volumes:
+      - appdata:/var/www/html
       - appmedia:/var/www/html/pub/media
 
   ## override volumes to eliminate bind mounts; depend on init container to ensure start order
   php-fpm:
     volumes:
-      - composer:/home/www-data/.composer
-      - appmedia:/var/www/html/pub/media
       - rootcert:/etc/ssl/warden-rootca-cert
+      - composer:/home/www-data/.composer
+      - appdata:/var/www/html
+      - appmedia:/var/www/html/pub/media
     depends_on:
       - magento-init
 
   ## override volumes to eliminate bind mounts; depend on init container to ensure start order
   php-debug:
     volumes:
-      - composer:/home/www-data/.composer
-      - appmedia:/var/www/html/pub/media
       - rootcert:/etc/ssl/warden-rootca-cert
+      - composer:/home/www-data/.composer
+      - appdata:/var/www/html
+      - appmedia:/var/www/html/pub/media
     depends_on:
       - magento-init
 
@@ -38,4 +41,5 @@ services:
 volumes:
   rootcert: {}
   composer: {}
+  appdata: {}
   appmedia: {}

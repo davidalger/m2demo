@@ -52,8 +52,8 @@ done
 
 :: Starting Warden
 warden up
-if [[ ! -f ~/.warden/ssl/certs/magento.test.crt.pem ]]; then
-    warden sign-certificate magento.test
+if [[ ! -f ~/.warden/ssl/certs/"${TRAEFIK_DOMAIN}".crt.pem ]]; then
+    warden sign-certificate "${TRAEFIK_DOMAIN}"
 fi
 
 :: Initializing environment
