@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+[[ ! ${WARDEN_DIR} ]] && >&2 echo -e "\033[31mThis script is not intended to be run directly!\033[0m" && exit 1
+
+WARDEN_USAGE=$(cat <<EOF
+\033[33mUsage:\033[0m
+  bootstrap [--no-sampledata] [--no-pull]
+
+\033[33mOptions:\033[0m
+  -h, --help        Display this help menu
+
+  --no-sampledata   starts m2demo using demo images without sampledata
+
+  --no-pull         when specified latest images will not be explicitly pulled prior
+                    to environment startup to facilitate use of locally built images
+
+EOF
+)
