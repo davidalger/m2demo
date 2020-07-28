@@ -1,45 +1,41 @@
 version: "3.5"
 services:
-  ## override volumes to eliminate bind mounts
   nginx:
     volumes:
       - appdata:/var/www/html
-      - appmedia:/var/www/html/pub/media
+    environment:
+      NGINX_PUBLIC: /pub
+      NGINX_TEMPLATE: magento2.conf
+    depends_on:
+      - php-fpm
 
-  ## override volumes to eliminate bind mounts; depend on init container to ensure start order
   php-fpm:
+    hostname: "${WARDEN_ENV_NAME}-php-fpm"
+    image: docker.io/wardenenv/php-fpm:${PHP_VERSION:-7.4}${WARDEN_SVC_PHP_VARIANT:-}
+    environment:
+      - TRAEFIK_DOMAIN
+      - TRAEFIK_SUBDOMAIN
+      - COMPOSER_MEMORY_LIMIT=-1
     volumes:
-      - rootcert:/etc/ssl/warden-rootca-cert
-      - composer:/home/www-data/.composer
       - appdata:/var/www/html
-      - appmedia:/var/www/html/pub/media
+    extra_hosts:
+      - ${TRAEFIK_DOMAIN}:${TRAEFIK_ADDRESS:-0.0.0.0}
+      - ${TRAEFIK_SUBDOMAIN:-app}.${TRAEFIK_DOMAIN}:${TRAEFIK_ADDRESS:-0.0.0.0}
     depends_on:
       - magento-init
 
-  ## override volumes to eliminate bind mounts; depend on init container to ensure start order
-  php-debug:
-    volumes:
-      - rootcert:/etc/ssl/warden-rootca-cert
-      - composer:/home/www-data/.composer
-      - appdata:/var/www/html
-      - appmedia:/var/www/html/pub/media
-    depends_on:
-      - magento-init
-
-  ## change database image to one with pre-built sql artifact for import on container start
   db:
     image: ${MAGENTO_REPOSITORY:-davidalger/magento}:${MAGENTO_VERSION}-mariadb${MAGENTO_VARIANT:-}
+    command:
+      - mysqld
+      - --max_allowed_packet=1024M
+      - --explicit_defaults_for_timestamp=on
 
-  ## functions as an init-container copying artifact files onto appdata volume then exits
   magento-init:
     image: ${MAGENTO_REPOSITORY:-davidalger/magento}:${MAGENTO_VERSION}${MAGENTO_VARIANT:-}
     volumes:
       - appdata:/var/www/html
-      - appmedia:/var/www/html/pub/media
     command: ["chown", "-R", "1000:1000", "/var/www/html"]
 
 volumes:
-  rootcert: {}
-  composer: {}
   appdata: {}
-  appmedia: {}
